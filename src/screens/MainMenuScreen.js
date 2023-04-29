@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
     alignItems: 'center',

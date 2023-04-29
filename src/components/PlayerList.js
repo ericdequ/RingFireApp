@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function PlayerList(props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Players:</Text>
+      <Text style={styles.title}></Text>
       {props.players.map((player) => (
         <Text key={player.name} style={styles.playerName}>{player.name}</Text>
       ))}
@@ -15,6 +15,10 @@ export default function PlayerList(props) {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
+    borderRadius: 5,
+    align: 'center',
+    padding: 10,
+    width: '100%',
   },
   title: {
     fontSize: 18,
@@ -25,5 +29,6 @@ const styles = StyleSheet.create({
   playerName: {
     fontSize: 16,
     color: '#FFF',
+    alignContent: 'center',
   },
 });

@@ -25,7 +25,8 @@ export default function PlayerForm(props) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'top',
+    align: 'top',
     marginBottom: 10,
   },
   textInput: {
