@@ -100,4 +100,4 @@ The app uses the following dependencies:
 
 This software is owned by Eric deQuevedo and is protected by proprietary license. No part of the software may be reproduced, distributed, or modified in any form without the express written permission of the owner.
 
-The owner makes no warranties, express or implied, regarding the fitness of this software
+The owner makes no warranties, express or implied, regarding the fitness of this software# RingFireApp
