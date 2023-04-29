@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Button, StyleSheet, ImageBackground, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, ImageBackground } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 import PlayerForm from '../components/PlayerForm';
 import PlayerList from '../components/PlayerList';
-import RulesSelector from '../components/RulesSelector';
 import { rules } from '../utils/rules';
+import { Appbar } from 'react-native-paper';
+import { Icon } from 'react-native-elements';
 
 export default function MainMenuScreen(props) {
   const [players, setPlayers] = React.useState([]);
@@ -17,21 +19,25 @@ export default function MainMenuScreen(props) {
     props.navigation.navigate('Game', { selectedRules });
   };
 
-  
-  
-  
-
   return (
     <ImageBackground source={require('../assets/images/background.jpg')} style={styles.backgroundImage} resizeMode='cover'>
       <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Ring of Fire</Text>
+        </View>
         <PlayerForm onAddPlayer={handleAddPlayer} />
         <PlayerList players={players} />
-        <RulesSelector rules={Object.keys(rules)} onChange={(value) => setSelectedRules(rules[value])} />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.startGameButton} onPress={handleStartGame}>
-            <Text style={styles.shuffleButtonText}>Start game</Text>
-          </TouchableOpacity>
-          <Button title="Start game" onPress={handleStartGame} />
+          <Button icon="play" mode="contained" onPress={handleStartGame} style={styles.startGameButton}>
+            Start game
+          </Button>
+          <Icon
+            name="cog"
+            type="font-awesome"
+            color="#FFF"
+            onPress={() => console.log('Edit rules')}
+            containerStyle={styles.editRulesButton}
+          />
         </View>
       </View>
     </ImageBackground>
@@ -41,7 +47,6 @@ export default function MainMenuScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'space-between',
     padding: 20,
     width: '100%',
@@ -52,31 +57,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  headerContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  headerText: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   buttonContainer: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  shuffleButton: {
-    backgroundColor: '#4B0082',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-  },
-  shuffleButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-  },
-  editRulesButton: {
-    backgroundColor: '#8B4513',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-  },
-  editRulesButtonText: {
-    color: '#FFF',
-    fontSize: 16,
   },
   startGameButton: {
     backgroundColor: '#1E90FF',
@@ -84,6 +83,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 5,
     minWidth: 120,
-    alignItems: 'center',
+  },
+  editRulesButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 5,
+    padding: 10,
   },
 });
