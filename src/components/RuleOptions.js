@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     },
   });
 
-function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
+export default function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
   const [activeSections, setActiveSections] = React.useState([]);
 
   const renderHeader = (section, _, isActive) => {
@@ -43,11 +43,15 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
   const renderContent = (section, _, isActive) => {
     return (
       <View style={styles.ruleContent}>
-        {Object.keys(section.content).map((key) => (
-          <Text key={key} style={styles.ruleText}>
-            {key}: {section.content[key]}
-          </Text>
-        ))}
+        <FlatList
+          data={Object.keys(section.content)}
+          renderItem={({ item: key }) => (
+            <Text style={styles.ruleText}>
+              {key}: {section.content[key]}
+            </Text>
+          )}
+          keyExtractor={(item) => item}
+        />
       </View>
     );
   };
@@ -69,7 +73,6 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
           <Accordion
             sections={ruleSections}
             activeSections={activeSections}
-            renderHeader={renderHeader}
             renderContent={renderContent}
             onChange={updateSections}
           />
@@ -84,4 +87,4 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
 
 
 
-export default RuleOptions;
+

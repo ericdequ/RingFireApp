@@ -27,9 +27,6 @@ export default function MainMenuScreen(props) {
   return (
     <ImageBackground source={require('../assets/images/background.jpg')} style={styles.backgroundImage} resizeMode='cover'>
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Ring of Fire</Text>
-        </View>
         <PlayerForm onAddPlayer={handleAddPlayer} />
         <PlayerList players={players} />
         <View style={styles.buttonContainer}>
@@ -41,6 +38,7 @@ export default function MainMenuScreen(props) {
           </TouchableOpacity>
         </View>
       </View>
+      {
       <RuleOptions
         visible={showRuleOptions}
         onDismiss={toggleRuleOptions}
@@ -50,6 +48,7 @@ export default function MainMenuScreen(props) {
         }}
         selectedRules={selectedRules}
       />
+      }
     </ImageBackground>
   );
 }
@@ -57,17 +56,17 @@ export default function MainMenuScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent:'flex-start',
+    justifyContent: 'flex-start',
     padding: 20,
     width: '100%',
-    },
-    backgroundImage: {
+  },
+  backgroundImage: {
     flex: 1,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    },
-    headerContainer: {
+  },
+  headerContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingVertical: 10,
     borderRadius: 5,
@@ -75,34 +74,43 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     marginBottom: 20,
-    },
-    headerText: {
+  },
+  headerText: {
     color: '#FFF',
     fontSize: 24,
     fontWeight: 'bold',
-    },
-    buttonContainer: {
+    textShadowColor: 'rgba(255, 99, 71, 0.8)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 10,
+  },
+  buttonContainer: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     position: 'absolute',
     bottom: 20,
-    },
-    startGameButton: {
+  },
+  startGameButton: {
     backgroundColor: '#1E90FF',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
     minWidth: 120,
-    },
-    editRulesButton: {
+  },
+  editRulesButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 5,
     padding: 10,
-    },
-    ruleOption: {
+  },
+  ruleOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    },
-    });
+  },
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+});
