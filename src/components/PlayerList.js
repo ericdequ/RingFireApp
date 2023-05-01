@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const emojis = ['🚀', '🐼', '🦄', '🍕', '🏖️', '🏄', '🌈', '🎮'];
+const emojis = ['🚀', '🐼', '🍻', '🧙‍♂️', '🦄', '🧟‍♀️', '🧿', '♋', '🍕', '🏖️', '🏄', '🌈', '🎮', '🧛', '🅿️', '🧞‍♂️', '🧟‍♀️'];
 
 function PlayerList({ players }) {
   return (
@@ -34,7 +34,7 @@ function PlayerList({ players }) {
       {players.map((player, index) => (
         <Card key={index} style={styles.playerCard}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.emojiIcon}>{emojis[index % emojis.length]}</Text>
+            <Text style={styles.emojiIcon}>{emojis[Math.floor(Math.random() * emojis.length)]}</Text>
             <Text style={styles.playerTitle}>{player.name}</Text>
           </View>
         </Card>
