@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ImageBackground, TouchableOpacity, Animated } from 'react-native';
-import { Button, Text, Portal, Dialog, RadioButton } from 'react-native-paper';
+import { View, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { Button, Text} from 'react-native-paper';
 import PlayerForm from '../components/PlayerForm';
 import PlayerList from '../components/PlayerList';
 import { rules } from '../utils/rules';
@@ -9,8 +9,17 @@ import RuleOptions from '../components/RuleOptions';
 
 export default function MainMenuScreen(props) {
   const [players, setPlayers] = React.useState([]);
+  const [AllRules, setAllRules]= React.useState(rules);
   const [selectedRules, setSelectedRules] = React.useState(rules.Standard);
   const [showRuleOptions, setShowRuleOptions] = React.useState(false);
+
+  /**
+   * Updates a specific rule in the AllRules state
+   * @param {string} ruleSetKey - The key of the rule set where the rule is located
+   * @param {number} ruleIndex - The index of the rule within the rule set
+   * @param {string} newRule - The new value of the rule
+   * @param {Function} callback - The callback function to execute after the state update
+   */
 
   const handleAddPlayer = (name) => {
     setPlayers([...players, { name }]);
@@ -24,9 +33,20 @@ export default function MainMenuScreen(props) {
     setShowRuleOptions(!showRuleOptions);
   };
 
+  const onUpdateRules = (ruleSetKey, ruleIndex, newRule, callback) => {
+    // ... state update logic
+    setAllRules(prevAllRules => {
+      const newAllRules = { ...prevAllRules };
+      const updatedRuleSet = [...newAllRules[ruleSetKey]];
+      updatedRuleSet[ruleIndex] = newRule;
+      newAllRules[ruleSetKey] = updatedRuleSet;
+      return newAllRules;
+    });
+    callback();
+  };
+
   return (
     <ImageBackground source={require('../assets/images/background.jpg')} style={styles.backgroundImage} resizeMode='cover'>
-      
       <View style={styles.container}>
         <PlayerForm onAddPlayer={handleAddPlayer} />
         <PlayerList players={players} />
@@ -55,11 +75,8 @@ export default function MainMenuScreen(props) {
             toggleRuleOptions();
           }}
           selectedRules={selectedRules}
-          onUpdateRules={(ruleSet, ruleIndex, newRule) => {
-            const newRules = [...ruleSet];
-            newRules[ruleIndex] = newRule;
-            setSelectedRules(newRules);
-          }}
+          onUpdateRules={onUpdateRules}
+          AllRules={AllRules}
         />
       }
     </ImageBackground>

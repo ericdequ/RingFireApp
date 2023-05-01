@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
+const emojis = ['🚀', '🐼', '🍻', '🧙‍♂️', '🦄', '🧟‍♀️', '🧿', '♋', '🍕', '🏖️', '🏄', '🌈', '🎮', '🧛', '🅿️', '🧞‍♂️', '🧟‍♀️'];
+
 export default function PlayerForm(props) {
   const [name, setName] = React.useState('');
 
   const handleSubmit = () => {
-    props.onAddPlayer(name);
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    props.onAddPlayer({ name, emoji });
     setName('');
   };
 
@@ -24,30 +27,3 @@ export default function PlayerForm(props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  textInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 8,
-    marginRight: 10,
-    flex: 1,
-  },
-  addButton: {
-    backgroundColor: '#1E90FF',
-    borderRadius: 5,
-    padding: 8,
-  },
-  addButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-  },
-});
