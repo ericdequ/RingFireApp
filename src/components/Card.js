@@ -1,6 +1,5 @@
-import React from 'react';
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import cardImages from '../assets/images/cards/cardImage';
+import cardImages from '../assets/images/cards_1/cardImage';
 
 function getCardImage(rank, suit) {
   const imageKey = `${rank}_of_${suit}`;

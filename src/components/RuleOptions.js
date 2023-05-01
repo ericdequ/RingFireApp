@@ -1,90 +1,72 @@
-import React, {useState} from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, Text, Portal, Dialog } from 'react-native-paper';
-import { Accordion } from 'react-native-collapsible';
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Button, Text, Portal, Dialog, RadioButton, ToggleButton } from 'react-native-paper';
 import { rules } from '../utils/rules';
 
 const styles = StyleSheet.create({
-    ruleHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: '#f0f0f0',
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      borderRadius: 5,
-      marginTop: 10,
-    },
-    ruleHeaderText: {
-      fontWeight: 'bold',
-    },
-    ruleContent: {
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-    },
-    ruleText: {
-      fontSize: 14,
-      marginBottom: 5,
-    },
-  });
+  ruleOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  ruleDescription: {
+    marginLeft: 40,
+    marginBottom: 5,
+  },
+});
 
-export default function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
-  const [activeSections, setActiveSections] = React.useState([]);
+function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
+  const [expandedRules, setExpandedRules] = React.useState(null);
 
-  const renderHeader = (section, _, isActive) => {
-    return (
-      <View style={styles.ruleHeader}>
-        <Text style={styles.ruleHeaderText}>{section.title}</Text>
-        <Text>{isActive ? '-' : '+'}</Text>
-      </View>
-    );
+  const handleExpand = (ruleSet) => {
+    if (expandedRules === ruleSet) {
+      setExpandedRules(null);
+    } else {
+      setExpandedRules(ruleSet);
+    }
   };
-
-  const renderContent = (section, _, isActive) => {
-    return (
-      <View style={styles.ruleContent}>
-        <FlatList
-          data={Object.keys(section.content)}
-          renderItem={({ item: key }) => (
-            <Text style={styles.ruleText}>
-              {key}: {section.content[key]}
-            </Text>
-          )}
-          keyExtractor={(item) => item}
-        />
-      </View>
-    );
-  };
-
-  const updateSections = (activeSections) => {
-    setActiveSections(activeSections);
-  };
-
-  const ruleSections = Object.keys(rules).map((ruleSet) => ({
-    title: ruleSet,
-    content: rules[ruleSet],
-  }));
 
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={onDismiss}>
         <Dialog.Title>Select rule set</Dialog.Title>
-        <Dialog.Content>
-          <Accordion
-            sections={ruleSections}
-            activeSections={activeSections}
-            renderContent={renderContent}
-            onChange={updateSections}
-          />
-        </Dialog.Content>
+        <Dialog.ScrollArea>
+          <ScrollView contentContainerStyle={{ paddingHorizontal: 24 }}>
+            {Object.keys(rules).map((ruleSet) => (
+              <View key={ruleSet}>
+                <View style={styles.ruleOption}>
+                  <RadioButton
+                    value={ruleSet}
+                    status={selectedRules === rules[ruleSet] ? 'checked' : 'unchecked'}
+                    onPress={() => onSelect(rules[ruleSet])}
+                  />
+                  <Text onPress={() => onSelect(rules[ruleSet])}>{ruleSet}</Text>
+                  <ToggleButton
+                    icon={expandedRules === ruleSet ? 'chevron-up' : 'chevron-down'}
+                    value="expand"
+                    onPress={() => handleExpand(ruleSet)}
+                    style={{ marginLeft: 'auto' }}
+                  />
+                </View>
+                {expandedRules === ruleSet && (
+                  <View>
+                    {rules[ruleSet].map((rule, index) => (
+                      <Text key={index} style={styles.ruleDescription}>
+                        {rule}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ))}
+          </ScrollView>
+        </Dialog.ScrollArea>
         <Dialog.Actions>
           <Button onPress={onDismiss}>Close</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
   );
-};
+}
 
-
-
-
+export default RuleOptions;

@@ -17,7 +17,7 @@ export default function MainMenuScreen(props) {
   };
 
   const handleStartGame = () => {
-    props.navigation.navigate('Game', { selectedRules });
+    props.navigation.navigate('Game', { selectedRules, players });
   };
 
   const toggleRuleOptions = () => {
@@ -30,24 +30,31 @@ export default function MainMenuScreen(props) {
         <PlayerForm onAddPlayer={handleAddPlayer} />
         <PlayerList players={players} />
         <View style={styles.buttonContainer}>
-          <Button icon="play" mode="contained" onPress={handleStartGame} style={styles.startGameButton}>
+          <Button
+            icon="play"
+            mode="contained"
+            onPress={handleStartGame}
+            style={[styles.startGameButton, players.length === 0 && styles.startGameButtonDisabled]}
+            disabled={players.length === 0}
+          >
             Start game
           </Button>
+          {players.length === 0 && <Text style={styles.addPlayersText}>Add players</Text>}
           <TouchableOpacity onPress={toggleRuleOptions} style={styles.editRulesButton}>
             <Icon name="cog" type="font-awesome" color="#FFF" />
           </TouchableOpacity>
         </View>
       </View>
       {
-      <RuleOptions
-        visible={showRuleOptions}
-        onDismiss={toggleRuleOptions}
-        onSelect={(selected) => {
-          setSelectedRules(selected);
-          toggleRuleOptions();
-        }}
-        selectedRules={selectedRules}
-      />
+        <RuleOptions
+          visible={showRuleOptions}
+          onDismiss={toggleRuleOptions}
+          onSelect={(selected) => {
+            setSelectedRules(selected);
+            toggleRuleOptions();
+          }}
+          selectedRules={selectedRules}
+        />
       }
     </ImageBackground>
   );
@@ -56,7 +63,7 @@ export default function MainMenuScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     padding: 20,
     width: '100%',
   },
@@ -66,30 +73,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    marginBottom: 20,
-  },
-  headerText: {
-    color: '#FFF',
-    fontSize: 24,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(255, 99, 71, 0.8)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 10,
-  },
   buttonContainer: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 20,
   },
   startGameButton: {
     backgroundColor: '#1E90FF',
@@ -98,19 +86,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     minWidth: 120,
   },
+  startGameButtonDisabled: {
+    backgroundColor: '#1E90FF80',
+  },
+  addPlayersText: {
+    color: 'red',
+    marginLeft: 5,
+  },
   editRulesButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 5,
     padding: 10,
-  },
-  ruleOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  gradient: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
   },
 });

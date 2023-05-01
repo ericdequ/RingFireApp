@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, Text, ImageBackground} from 'react-native';
 import Card from '../components/Card';
-import { rules } from '../utils/rules';
 import { deck } from '../utils/deck';
-// import { Audio } from 'expo-av'; // Comment out this line
+import { useRoute } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,71 +18,97 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ruleText: {
-    fontSize: 20,
+    fontSize: 24,
     marginTop: 20,
     textAlign: 'center',
     color: '#FFF',
-    textShadowColor: '#000',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    fontWeight: 'bold',
   },
-  audioToggle: {
-    fontSize: 18,
+  playerTurn: {
+    fontSize: 26,
+    fontWeight: 'bold',
     marginTop: 20,
     textAlign: 'center',
     color: '#FFF',
-    textShadowColor: '#000',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  cardsLeft: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    color: '#FFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  kingsLeft: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  lastKing: {
+    color: 'red',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
 });
-
-export default function GameScreen({ route }) {
-  const [selectedRules, setSelectedRules] = useState(rules.Standard);
+export default function GameScreen() {
+  const route = useRoute();
+  const [selectedRules] = useState(route.params.selectedRules);
   const [currentCard, setCurrentCard] = useState('');
-  // const [audioEnabled, setAudioEnabled] = useState(false); // Comment out this line
+  const [players] = useState(route.params.players);
+  const [currentPlayer, setCurrentPlayer] = useState(0);
+  const [showCardBack, setShowCardBack] = useState(true);
+  const [kingsLeft, setKingsLeft] = useState(4);
 
-  const handleDrawCard = async () => {
-    const card = deck.drawCard();
-    setCurrentCard(card);
+  const handleDrawCard = useCallback(() => {
+    if (showCardBack) {
+      const card = deck.drawCard();
+      setCurrentCard(card);
+      setShowCardBack(false);
 
-    // Comment out the audio functionality
-    // if (audioEnabled) {
-    //   const selectedRule = selectedRules.find(r => r.startsWith(card.rank));
-    //   if (selectedRule) {
-    //     const ruleText = selectedRule.split(' = ')[1];
-    //     const soundObject = new Audio.Sound();
-    //     try {
-    //       await soundObject.loadAsync(
-    //         { uri: `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${ruleText}` },
-    //         { shouldPlay: true }
-    //       );
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    // }
-  };
+      if (card.rank === 'King') {
+        setKingsLeft((prevKingsLeft) => prevKingsLeft - 1);
+      }
+    } else {
+      setCurrentPlayer((prevCurrentPlayer) => (prevCurrentPlayer + 1) % players.length);
+      setShowCardBack(true);
+    }
+  }, [showCardBack, players.length]);
 
-  // const toggleAudio = () => { // Comment out this function
-  //   setAudioEnabled(!audioEnabled);
-  // };
+  const ruleText = React.useMemo(() => {
+    if (currentCard && !showCardBack) {
+      const selectedRule = selectedRules.find(r => r.startsWith(currentCard.rank));
+      return selectedRule ? selectedRule.split(' = ')[1] : '';
+    }
+    return '';
+  }, [currentCard, showCardBack, selectedRules]);
 
-  let ruleText = '';
-  if (currentCard) {
-    const selectedRule = selectedRules.find(r => r.startsWith(currentCard.rank));
-    ruleText = selectedRule ? selectedRule.split(' = ')[1] : '';
-  }
+  const cardsLeft = deck.cards.length;
 
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/images/background.jpg')} style={styles.backgroundImage} resizeMode='cover'>
-        <Card card={currentCard} onPress={handleDrawCard} />
-        {ruleText !== '' && <Text style={styles.ruleText}>{ruleText}</Text>}
-        {/* Comment out the audio toggle button */}
-        {/* <TouchableOpacity onPress={toggleAudio}>
-          <Text style={styles.audioToggle}>{audioEnabled ? 'Turn off audio' : 'Turn on audio'}</Text>
-        </TouchableOpacity> */}
+        <Text style={styles.cardsLeft}>Cards left: {cardsLeft}</Text>
+        <Text style={[styles.kingsLeft, kingsLeft === 1 ? styles.lastKing : { color: '#FFF' }]}>Kings left: {kingsLeft}</Text>
+        <Card card={showCardBack ? 'back' : currentCard} onPress={handleDrawCard} />
+        {ruleText !== '' && !showCardBack && <Text style={styles.ruleText}>{ruleText}</Text>}
+        <Text style={styles.playerTurn}>{showCardBack ? `${players[currentPlayer].name}'s turn to draw a card` : 'Click to continue'}</Text>
       </ImageBackground>
     </View>
   );
