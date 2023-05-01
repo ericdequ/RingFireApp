@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button, Text, Portal, Dialog, RadioButton, ToggleButton } from 'react-native-paper';
+import { Button, Text, Portal, Dialog, RadioButton, Card } from 'react-native-paper';
 import { rules } from '../utils/rules';
+import RuleEditDialog from './RuleEditDialog'; // Importing the RuleEditDialog component
 
 const styles = StyleSheet.create({
   ruleOption: {
@@ -13,10 +14,28 @@ const styles = StyleSheet.create({
     marginLeft: 40,
     marginBottom: 5,
   },
+  editButton: {
+    marginLeft: 'auto',
+  },
+  cardContainer: {
+    marginBottom: 10,
+  },
 });
 
-function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
+function RuleOptions({ visible, onDismiss, onSelect, selectedRules, onUpdateRules }) {
   const [expandedRules, setExpandedRules] = React.useState(null);
+  const [editDialogVisible, setEditDialogVisible] = React.useState(false);
+  const [editingRule, setEditingRule] = React.useState(null);
+
+  const handleEditRule = (ruleSet, ruleIndex) => {
+    setEditingRule({ ruleSet, ruleIndex });
+    setEditDialogVisible(true);
+  };
+
+  const handleSaveRule = (newRule) => {
+    onUpdateRules(editingRule.ruleSet, editingRule.ruleIndex, newRule);
+    setEditDialogVisible(false);
+  };
 
   const handleExpand = (ruleSet) => {
     if (expandedRules === ruleSet) {
@@ -41,19 +60,21 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
                     onPress={() => onSelect(rules[ruleSet])}
                   />
                   <Text onPress={() => onSelect(rules[ruleSet])}>{ruleSet}</Text>
-                  <ToggleButton
-                    icon={expandedRules === ruleSet ? 'chevron-up' : 'chevron-down'}
-                    value="expand"
-                    onPress={() => handleExpand(ruleSet)}
-                    style={{ marginLeft: 'auto' }}
-                  />
+                  <Button onPress={() => handleExpand(ruleSet)} style={styles.editButton}>
+                    {expandedRules === ruleSet ? 'Hide' : 'Show'}
+                  </Button>
                 </View>
                 {expandedRules === ruleSet && (
                   <View>
                     {rules[ruleSet].map((rule, index) => (
-                      <Text key={index} style={styles.ruleDescription}>
-                        {rule}
-                      </Text>
+                      <Card key={index} style={styles.cardContainer}>
+                        <Card.Content>
+                          <Text>{rule}</Text>
+                        </Card.Content>
+                        <Card.Actions>
+                          <Button onPress={() => handleEditRule(ruleSet, index)}>Edit</Button>
+                        </Card.Actions>
+                      </Card>
                     ))}
                   </View>
                 )}
@@ -65,8 +86,14 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules }) {
           <Button onPress={onDismiss}>Close</Button>
         </Dialog.Actions>
       </Dialog>
-    </Portal>
-  );
-}
-
-export default RuleOptions;
+      <RuleEditDialog
+        visible={editDialogVisible}
+        onDismiss={() => setEditDialogVisible(false)}
+        onSave={handleSaveRule}
+        rule={editingRule && rules[editingRule.ruleSet][editingRule.ruleIndex]}
+        />
+        </Portal>
+        );
+        }
+        
+        export default RuleOptions;

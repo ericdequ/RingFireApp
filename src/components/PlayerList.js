@@ -1,34 +1,46 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function PlayerList(props) {
-  return (
-    <View style={styles.container}>
-      {props.players.map((player, index) => (
-        <View key={player.name} style={[styles.playerCard, { backgroundColor: `rgba(0, 0, 0, ${0.8 - index * 0.1})` }]}>
-          <Text style={styles.playerName}>{player.name}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { Card } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-    width: '100%',
+    marginBottom: 21,
   },
   playerCard: {
-    borderRadius: 20,
-    padding: 10,
-    width: '80%',
-    marginBottom: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    marginBottom: 15,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 23,
   },
-  playerName: {
-    fontSize: 16,
-    color: '#FFF',
-    textAlign: 'center',
+  playerTitle: {
+    padding: 15,
+    fontSize: 21,
+  },
+  emojiIcon: {
+    fontSize: 33,
+    paddingRight: 9,
   },
 });
+
+const emojis = ['🚀', '🐼', '🦄', '🍕', '🏖️', '🏄', '🌈', '🎮'];
+
+function PlayerList({ players }) {
+  return (
+    <ScrollView style={styles.container}>
+      {players.map((player, index) => (
+        <Card key={index} style={styles.playerCard}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.emojiIcon}>{emojis[index % emojis.length]}</Text>
+            <Text style={styles.playerTitle}>{player.name}</Text>
+          </View>
+        </Card>
+      ))}
+    </ScrollView>
+  );
+}
+
+export default PlayerList;

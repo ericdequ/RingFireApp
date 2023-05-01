@@ -1,3 +1,5 @@
+
+
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Text, ImageBackground} from 'react-native';
 import Card from '../components/Card';

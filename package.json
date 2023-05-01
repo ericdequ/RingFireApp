@@ -10,6 +10,7 @@
     "web": "npx expo start --web"
   },
   "dependencies": {
+    "@react-native-community/blur": "^4.3.0",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
     "expo": "~48.0.15",
@@ -18,8 +19,11 @@
     "expo-linear-gradient": "^12.1.2",
     "expo-status-bar": "~1.4.4",
     "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-touch-backend": "^16.0.1",
     "react-native": "0.71.7",
     "react-native-collapsible": "^1.6.1",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-linear-gradient": "^2.6.2",

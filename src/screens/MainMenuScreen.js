@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import { Button, Text, Portal, Dialog, RadioButton } from 'react-native-paper';
 import PlayerForm from '../components/PlayerForm';
 import PlayerList from '../components/PlayerList';
@@ -26,6 +26,7 @@ export default function MainMenuScreen(props) {
 
   return (
     <ImageBackground source={require('../assets/images/background.jpg')} style={styles.backgroundImage} resizeMode='cover'>
+      
       <View style={styles.container}>
         <PlayerForm onAddPlayer={handleAddPlayer} />
         <PlayerList players={players} />
@@ -54,6 +55,11 @@ export default function MainMenuScreen(props) {
             toggleRuleOptions();
           }}
           selectedRules={selectedRules}
+          onUpdateRules={(ruleSet, ruleIndex, newRule) => {
+            const newRules = [...ruleSet];
+            newRules[ruleIndex] = newRule;
+            setSelectedRules(newRules);
+          }}
         />
       }
     </ImageBackground>
@@ -70,6 +76,11 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  blur: {
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -92,10 +103,11 @@ const styles = StyleSheet.create({
   addPlayersText: {
     color: 'red',
     marginLeft: 5,
-  },
-  editRulesButton: {
+    fontSize: 16,
+    },
+    editRulesButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 5,
     padding: 10,
-  },
-});
+    },
+    });
