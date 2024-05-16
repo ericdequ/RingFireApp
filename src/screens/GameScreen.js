@@ -1,10 +1,10 @@
-
-
-import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Text, ImageBackground} from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { View, StyleSheet, Text, ImageBackground, Animated, Easing } from 'react-native';
 import Card from '../components/Card';
 import { deck } from '../utils/deck';
 import { useRoute } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 const styles = StyleSheet.create({
   container: {
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
 });
+
 export default function GameScreen() {
   const route = useRoute();
   const [selectedRules] = useState(route.params.selectedRules);
@@ -77,21 +78,37 @@ export default function GameScreen() {
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [showCardBack, setShowCardBack] = useState(true);
   const [kingsLeft, setKingsLeft] = useState(4);
+  const [ruleTextOpacity] = useState(new Animated.Value(0));
+  const confettiRef = useRef(null);
 
   const handleDrawCard = useCallback(() => {
     if (showCardBack) {
       const card = deck.drawCard();
       setCurrentCard(card);
       setShowCardBack(false);
-
       if (card.rank === 'King') {
         setKingsLeft((prevKingsLeft) => prevKingsLeft - 1);
+        if (kingsLeft === 1) {
+          confettiRef.current.start();
+        }
       }
+      Animated.timing(ruleTextOpacity, {
+        toValue: 1,
+        duration: 500,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }).start();
     } else {
       setCurrentPlayer((prevCurrentPlayer) => (prevCurrentPlayer + 1) % players.length);
       setShowCardBack(true);
+      Animated.timing(ruleTextOpacity, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }).start();
     }
-  }, [showCardBack, players.length]);
+  }, [showCardBack, players.length, kingsLeft]);
 
   const ruleText = React.useMemo(() => {
     if (currentCard && !showCardBack) {
@@ -109,8 +126,18 @@ export default function GameScreen() {
         <Text style={styles.cardsLeft}>Cards left: {cardsLeft}</Text>
         <Text style={[styles.kingsLeft, kingsLeft === 1 ? styles.lastKing : { color: '#FFF' }]}>Kings left: {kingsLeft}</Text>
         <Card card={showCardBack ? 'back' : currentCard} onPress={handleDrawCard} />
-        {ruleText !== '' && !showCardBack && <Text style={styles.ruleText}>{ruleText}</Text>}
+        {ruleText !== '' && !showCardBack && (
+          <Animated.Text style={[styles.ruleText, { opacity: ruleTextOpacity }]}>{ruleText}</Animated.Text>
+        )}
         <Text style={styles.playerTurn}>{showCardBack ? `${players[currentPlayer].name}'s turn to draw a card` : 'Click to continue'}</Text>
+        {kingsLeft === 1 && (
+          <ConfettiCannon
+            count={200}
+            origin={{ x: 0, y: 0 }}
+            autoStart={false}
+            ref={confettiRef}
+          />
+        )}
       </ImageBackground>
     </View>
   );

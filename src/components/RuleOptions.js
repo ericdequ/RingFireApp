@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Animated } from 'react-native';
 import { Button, Text, Portal, Dialog, RadioButton, Card } from 'react-native-paper';
 import { rules } from '../utils/rules';
-import RuleEditDialog from './RuleEditDialog'; // Importing the RuleEditDialog component
+import RuleEditDialog from './RuleEditDialog';
 
 const styles = StyleSheet.create({
   ruleOption: {
@@ -19,6 +19,11 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     marginBottom: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 });
 
@@ -27,22 +32,69 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules, onUpdateRule
   const [editDialogVisible, setEditDialogVisible] = React.useState(false);
   const [editingRule, setEditingRule] = React.useState(null);
 
+  // Animation values
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const cardAnimatedValue = React.useRef(new Animated.Value(0)).current;
+
+  // Animation configs
+  const animationConfig = {
+    toValue: 1,
+    duration: 300,
+    useNativeDriver: true,
+  };
+
+  // Animate the rule options when the dialog becomes visible
+  React.useEffect(() => {
+    if (visible) {
+      Animated.timing(animatedValue, animationConfig).start();
+    }
+  }, [visible]);
+
+  // Handle editing a rule
   const handleEditRule = (ruleSet, ruleIndex) => {
     setEditingRule({ ruleSet, ruleIndex });
     setEditDialogVisible(true);
   };
 
+  // Handle saving an edited rule
   const handleSaveRule = (newRule) => {
     onUpdateRules(editingRule.ruleSet, editingRule.ruleIndex, newRule);
     setEditDialogVisible(false);
   };
 
+  // Handle expanding/collapsing rule details
   const handleExpand = (ruleSet) => {
     if (expandedRules === ruleSet) {
       setExpandedRules(null);
     } else {
       setExpandedRules(ruleSet);
+      Animated.timing(cardAnimatedValue, animationConfig).start();
     }
+  };
+
+  // Animated styles
+  const animatedStyle = {
+    opacity: animatedValue,
+    transform: [
+      {
+        translateY: animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [20, 0],
+        }),
+      },
+    ],
+  };
+
+  const cardAnimatedStyle = {
+    opacity: cardAnimatedValue,
+    transform: [
+      {
+        scale: cardAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.8, 1],
+        }),
+      },
+    ],
   };
 
   return (
@@ -50,7 +102,10 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules, onUpdateRule
       <Dialog visible={visible} onDismiss={onDismiss}>
         <Dialog.Title>Select rule set</Dialog.Title>
         <Dialog.ScrollArea>
-          <ScrollView contentContainerStyle={{ paddingHorizontal: 24 }}>
+          <Animated.ScrollView
+            contentContainerStyle={{ paddingHorizontal: 24 }}
+            style={animatedStyle}
+          >
             {Object.keys(rules).map((ruleSet) => (
               <View key={ruleSet}>
                 <View style={styles.ruleOption}>
@@ -65,7 +120,7 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules, onUpdateRule
                   </Button>
                 </View>
                 {expandedRules === ruleSet && (
-                  <View>
+                  <Animated.View style={cardAnimatedStyle}>
                     {rules[ruleSet].map((rule, index) => (
                       <Card key={index} style={styles.cardContainer}>
                         <Card.Content>
@@ -76,11 +131,11 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules, onUpdateRule
                         </Card.Actions>
                       </Card>
                     ))}
-                  </View>
+                  </Animated.View>
                 )}
               </View>
             ))}
-          </ScrollView>
+          </Animated.ScrollView>
         </Dialog.ScrollArea>
         <Dialog.Actions>
           <Button onPress={onDismiss}>Close</Button>
@@ -91,9 +146,9 @@ function RuleOptions({ visible, onDismiss, onSelect, selectedRules, onUpdateRule
         onDismiss={() => setEditDialogVisible(false)}
         onSave={handleSaveRule}
         rule={editingRule && rules[editingRule.ruleSet][editingRule.ruleIndex]}
-        />
-        </Portal>
-        );
-        }
-        
-        export default RuleOptions;
+      />
+    </Portal>
+  );
+}
+
+export default RuleOptions;

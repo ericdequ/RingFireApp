@@ -6,17 +6,24 @@ import PlayerList from '../components/PlayerList';
 import { rules } from '../utils/rules';
 import { Icon } from 'react-native-elements';
 import RuleOptions from '../components/RuleOptions';
+import LottieView from 'lottie-react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 export default function MainMenuScreen(props) {
   const [players, setPlayers] = React.useState([]);
   const [selectedRules, setSelectedRules] = React.useState(rules.Standard);
   const [showRuleOptions, setShowRuleOptions] = React.useState(false);
+  const [confettiReady, setConfettiReady] = React.useState(false);
+  const confettiRef = React.useRef(null);
 
   const handleAddPlayer = (name) => {
     setPlayers([...players, { name }]);
   };
 
   const handleStartGame = () => {
+    if (confettiReady) {
+      confettiRef.current.start();
+    }
     props.navigation.navigate('Game', { selectedRules, players });
   };
 
@@ -24,9 +31,14 @@ export default function MainMenuScreen(props) {
     setShowRuleOptions(!showRuleOptions);
   };
 
+  React.useEffect(() => {
+    if (players.length > 0) {
+      setConfettiReady(true);
+    }
+  }, [players]);
+
   return (
     <ImageBackground source={require('../assets/images/background.jpg')} style={styles.backgroundImage} resizeMode='cover'>
-      
       <View style={styles.container}>
         <PlayerForm onAddPlayer={handleAddPlayer} />
         <PlayerList players={players} />
@@ -42,11 +54,16 @@ export default function MainMenuScreen(props) {
           </Button>
           {players.length === 0 && <Text style={styles.addPlayersText}>Add players</Text>}
           <TouchableOpacity onPress={toggleRuleOptions} style={styles.editRulesButton}>
-            <Icon name="cog" type="font-awesome" color="#FFF" />
+            <LottieView
+              source={require('../assets/animations/cog.json')}
+              style={styles.cogAnimation}
+              autoPlay
+              loop
+            />
           </TouchableOpacity>
         </View>
       </View>
-      {
+      {showRuleOptions && (
         <RuleOptions
           visible={showRuleOptions}
           onDismiss={toggleRuleOptions}
@@ -61,7 +78,15 @@ export default function MainMenuScreen(props) {
             setSelectedRules(newRules);
           }}
         />
-      }
+      )}
+      {confettiReady && (
+        <ConfettiCannon
+          count={200}
+          origin={{ x: -10, y: 0 }}
+          autoStart={false}
+          ref={confettiRef}
+        />
+      )}
     </ImageBackground>
   );
 }
@@ -104,10 +129,14 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft: 5,
     fontSize: 16,
-    },
-    editRulesButton: {
+  },
+  editRulesButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 5,
     padding: 10,
-    },
-    });
+  },
+  cogAnimation: {
+    width: 30,
+    height: 30,
+  },
+});

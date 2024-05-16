@@ -4,6 +4,7 @@ import MainMenuScreen from '../screens/MainMenuScreen';
 import GameScreen from '../screens/GameScreen';
 import { StyleSheet, View, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
+import LottieView from 'lottie-react-native';
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,15 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: 'bold',
     textShadowRadius: 3,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flameAnimation: {
+    width: 50,
+    height: 50,
   },
 });
 
@@ -24,12 +34,12 @@ const FireText = ({ children }) => {
         Animated.timing(animation, {
           toValue: 1,
           duration: 1000,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
         Animated.timing(animation, {
           toValue: 0,
           duration: 1000,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
       ]),
     ).start();
@@ -62,7 +72,23 @@ function AppNavigator() {
         headerStyle: {
           backgroundColor: 'black',
         },
-        headerTitle: () => <FireText>RING OF FIRE</FireText>,
+        headerTitle: () => (
+          <View style={styles.headerContainer}>
+            <LottieView
+              source={require('../assets/animations/flame.json')}
+              style={styles.flameAnimation}
+              autoPlay
+              loop
+            />
+            <FireText>RING OF FIRE</FireText>
+            <LottieView
+              source={require('../assets/animations/flame.json')}
+              style={styles.flameAnimation}
+              autoPlay
+              loop
+            />
+          </View>
+        ),
       }}
     >
       <Stack.Screen name="MainMenu" component={MainMenuScreen} />

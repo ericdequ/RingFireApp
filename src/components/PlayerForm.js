@@ -1,12 +1,36 @@
-import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function PlayerForm(props) {
   const [name, setName] = React.useState('');
+  const buttonScale = useRef(new Animated.Value(1)).current;
 
   const handleSubmit = () => {
-    props.onAddPlayer(name);
-    setName('');
+    if (name.trim() !== '') {
+      props.onAddPlayer(name);
+      setName('');
+      animateButton();
+    }
+  };
+
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 1.1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const buttonAnimatedStyle = {
+    transform: [{ scale: buttonScale }],
   };
 
   return (
@@ -18,9 +42,14 @@ export default function PlayerForm(props) {
         value={name}
         onChangeText={setName}
       />
-      <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
-        <Text style={styles.addButtonText}>Add player</Text>
-      </TouchableOpacity>
+      <Animated.View style={[styles.addButton, buttonAnimatedStyle]}>
+        <TouchableOpacity onPress={handleSubmit}>
+          <View style={styles.addButtonContent}>
+            <MaterialIcons name="person-add" size={24} color="#FFF" />
+            <Text style={styles.addButtonText}>Add player</Text>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }
@@ -45,9 +74,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E90FF',
     borderRadius: 5,
     padding: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+  },
+  addButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   addButtonText: {
     color: '#FFF',
     fontSize: 16,
+    marginLeft: 5,
   },
 });
